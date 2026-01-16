@@ -42,13 +42,13 @@ public class FileHandlingDemo {
 
 //
 //	// ========== 1. BASIC FILE OPERATIONS ==========
-//	static void basicFileOperations() throws IOException {
+	static void basicFileOperations() throws IOException {
 //		System.out.println("\n--- 1. BASIC FILE OPERATIONS ---");
 //
-//		File file = new File("test.txt");
+		File file = new File("test.txt");
 //
 //		// Create new file
-//		if (file.createNewFile()) {
+		if (file.createNewFile()) 
 //			System.out.println("File created: " + file.getName());
 //		} else {
 //			System.out.println("File already exists");
@@ -60,7 +60,7 @@ public class FileHandlingDemo {
 //		System.out.println("Can read: " + file.canRead());
 //		System.out.println("File size: " + file.length() + " bytes");
 //		System.out.println("Is directory: " + file.isDirectory());
-//	}
+	}
 
 //
 //	// ========== 2. READING FILES ==========
