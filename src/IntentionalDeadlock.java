@@ -1,3 +1,4 @@
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,9 +21,32 @@ class ThreadA implements Runnable {
 
 	@Override
 	public void run() {
-		l1.lock();
+
+		try {
+			if (l1.tryLock(300, TimeUnit.MILLISECONDS)) {
+				try {
+					if (l2.tryLock(300, TimeUnit.MILLISECONDS)) {
+						try {
+							sharedResource1.setData(1);
+						} finally {
+							l2.unlock();
+						}
+
+					}
+
+					else {
+						// Could not get lock 2
+						System.out.println("Will try later, as could not get lock 2");
+					}
+				} finally {
+					l1.unlock();
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("Thread 1 acquired lock 1 ");
-		sharedResource1.setData(1);
 
 		try {
 
@@ -52,19 +76,41 @@ class ThreadB implements Runnable {
 
 	@Override
 	public void run() {
-		l2.lock();
-		System.out.println("Thread 2 acquired lock 2");
-
 		try {
-			Thread.sleep(30);
-			l1.lock();
-			System.out.println("Thread 2 acuired lock 11");
+			if (l1.tryLock(300, TimeUnit.MILLISECONDS)) {
+				try {
+					if (l2.tryLock(300, TimeUnit.MILLISECONDS)) {
+						try {
+							sharedResource1.setData(112);
+						} finally {
+							l2.unlock();
+						}
+
+					}
+
+					else {
+						// Could not get lock 2
+						System.out.println("Will try later, as could not get lock 2");
+					}
+				} finally {
+					l1.unlock();
+				}
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
 
+			try {
+				Thread.sleep(30);
+				l1.lock();
+				System.out.println("Thread 2 acuired lock 11");
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+	}
 }
 
 class SharedResource1 {
@@ -79,7 +125,6 @@ class SharedResource1 {
 	}
 
 	public SharedResource1(int data) {
-		super();
 		this.data = data;
 	}
 
@@ -97,7 +142,6 @@ class SharedResource2 {
 	}
 
 	public SharedResource2(int data) {
-		super();
 		this.data = data;
 	}
 
@@ -118,9 +162,9 @@ public class IntentionalDeadlock {
 		System.out.println("Thread a status; " + t1.getState() + " and Thread B status: " + t2.getState());
 
 		t1.start();
-		Thread.sleep(40);
+//		Thread.sleep(40);
 		t2.start();
-		Thread.sleep(50);
+//		Thread.sleep(40);
 
 		System.out.println("Thread a status; " + t1.getState() + " and Thread B status: " + t2.getState());
 	}
