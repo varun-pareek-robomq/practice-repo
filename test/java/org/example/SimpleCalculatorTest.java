@@ -16,6 +16,7 @@ public class SimpleCalculatorTest extends TestCase {
         SimpleCalculator sc = new SimpleCalculator();
         assertEquals(-1,sc.subtract(3,4));
 
+
     }public void testDivide() {
         SimpleCalculator sc = new SimpleCalculator();
         assertEquals((double)Integer.MAX_VALUE,sc.divide(3,0));
